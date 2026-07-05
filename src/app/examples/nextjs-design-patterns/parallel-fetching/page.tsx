@@ -1,20 +1,7 @@
 import { ArrowLeft, Network } from 'lucide-react';
 import Link from 'next/link';
-
-// Simulating a slow 2-second user fetch
-async function getUser() {
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  return { name: 'Alice Johnson', role: 'Admin' };
-}
-
-// Simulating a slow 2-second posts fetch
-async function getPosts() {
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  return [
-    { id: 1, title: 'Optimizing Next.js' },
-    { id: 2, title: 'Understanding React 19' }
-  ];
-}
+import { DataDisplay } from './components/DataDisplay';
+import { getPosts, getUser } from './lib/data';
 
 export default async function ParallelFetchingPage({ searchParams }: { searchParams: Promise<{ waterfall?: string }> }) {
   const params = await searchParams;
@@ -81,16 +68,7 @@ export default async function ParallelFetchingPage({ searchParams }: { searchPar
 
           <div className="p-6 bg-slate-950 border border-slate-800 rounded-2xl">
             <div className="text-sm text-slate-500 mb-4">Data Fetched</div>
-            <div className="space-y-4">
-              <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                <span className="text-xs font-bold text-slate-500 uppercase block mb-1">User Profile</span>
-                <span className="text-slate-200">{user.name} ({user.role})</span>
-              </div>
-              <div className="p-3 bg-slate-900 rounded-lg border border-slate-800">
-                <span className="text-xs font-bold text-slate-500 uppercase block mb-1">Posts</span>
-                <span className="text-slate-200">{posts.length} items retrieved</span>
-              </div>
-            </div>
+            <DataDisplay user={user} posts={posts} />
           </div>
         </div>
       </div>

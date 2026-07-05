@@ -1,16 +1,7 @@
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
-import { InteractiveCounter } from './InteractiveCounter';
-
-// Simulate a slow database query
-async function getHeavyServerData() {
-  await new Promise(resolve => setTimeout(resolve, 2000));
-  return [
-    { id: 1, name: "Enterprise Server Rack" },
-    { id: 2, name: "Edge Compute Node" },
-    { id: 3, name: "Database Cluster" }
-  ];
-}
+import { ProductList } from './components/ProductList';
+import { getHeavyServerData } from './lib/data';
 
 export default async function ClientBoundaryPage() {
   // This runs entirely on the server and does not ship to the client.
@@ -32,16 +23,7 @@ export default async function ClientBoundaryPage() {
           This entire page is a Server Component. It fetched the list of products below securely from the server (with a simulated 2s delay). Because we only need interactivity for the counter, we isolated the <code>"use client"</code> directive into a tiny leaf component.
         </p>
 
-        <div className="grid gap-4">
-          {data.map(item => (
-            <div key={item.id} className="flex items-center justify-between p-4 bg-slate-950 rounded-xl border border-slate-800">
-              <span className="text-slate-200 font-medium">{item.name}</span>
-              
-              {/* This is the Client Component Leaf */}
-              <InteractiveCounter />
-            </div>
-          ))}
-        </div>
+        <ProductList data={data} />
       </div>
     </div>
   );
