@@ -13,6 +13,6 @@ export const kvStorage = createStorage({
 // Setup Blob storage (Files/Binaries)
 export const blobStorage = createStorage({
   driver: process.env.NODE_ENV === 'production'
-    ? vercelBlobDriver({ access: 'public', base: 'blobs' })
+    ? vercelBlobDriver({ access: 'private' as any, base: 'blobs' })
     : fsDriver({ base: './.data/blob' })
 });
