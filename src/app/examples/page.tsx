@@ -56,9 +56,9 @@ const examples = [
     color: 'from-fuchsia-500 to-purple-500',
   },
   {
-    title: 'Unstorage KV',
-    href: '/examples/unstorage',
-    description: 'A playground to test universal Key-Value storage via unstorage.',
+    title: 'Custom Storage',
+    href: '/examples/storage',
+    description: 'A playground to test custom Key-Value and Blob storage wrappers.',
     color: 'from-violet-500 to-purple-500',
   },
 ];
