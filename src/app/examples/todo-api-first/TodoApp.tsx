@@ -1,92 +1,32 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { Trash2 } from "lucide-react";
-
-type Todo = {
-  id: number;
-  text: string;
-  completed: boolean;
-  createdAt: string;
-};
-
-async function fetchTodos(): Promise<Todo[]> {
-  const res = await fetch("/api/todos");
-  if (!res.ok) throw new Error("Network response was not ok");
-  return res.json();
-}
-
-async function createTodo(text: string): Promise<Todo> {
-  const res = await fetch("/api/todos", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text }),
-  });
-  if (!res.ok) throw new Error("Failed to create todo");
-  return res.json();
-}
-
-async function toggleTodo(todo: Todo): Promise<Todo> {
-  const res = await fetch(`/api/todos/${todo.id}`, {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ completed: !todo.completed }),
-  });
-  if (!res.ok) throw new Error("Failed to update todo");
-  return res.json();
-}
-
-async function deleteTodo(id: number): Promise<void> {
-  const res = await fetch(`/api/todos/${id}`, {
-    method: "DELETE",
-  });
-  if (!res.ok) throw new Error("Failed to delete todo");
-}
+import { useTodos, useCreateTodo, useToggleTodo, useDeleteTodo } from "./sdk";
 
 export default function TodoApp() {
-  const queryClient = useQueryClient();
   const [text, setText] = useState("");
 
-  const { data: todos, isLoading, isError } = useQuery({
-    queryKey: ["todos"],
-    queryFn: fetchTodos,
-  });
+  const { data: todos, isLoading, isError } = useTodos();
+  const createMutation = useCreateTodo();
+  const toggleMutation = useToggleTodo();
+  const deleteMutation = useDeleteTodo();
 
-  const createMutation = useMutation({
-    mutationFn: createTodo,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-      setText("");
-    },
-  });
-
-  const toggleMutation = useMutation({
-    mutationFn: toggleTodo,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteTodo,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["todos"] });
-    },
-  });
+  const handleCreate = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (text.trim()) {
+      createMutation.mutate(text, {
+        onSuccess: () => setText(""),
+      });
+    }
+  };
 
   if (isLoading) return <p className="text-center text-zinc-500">Loading todos...</p>;
   if (isError) return <p className="text-center text-red-500">Failed to load todos.</p>;
 
   return (
     <div>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (text.trim()) createMutation.mutate(text);
-        }}
-        className="flex gap-2 mb-6"
-      >
+      <form onSubmit={handleCreate} className="flex gap-2 mb-6">
         <input
           type="text"
           value={text}
