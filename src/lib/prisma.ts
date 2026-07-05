@@ -1,36 +1,17 @@
 /**
  * Prisma client with adapter autodetection:
  *
- * - If DATABASE_URL points to a remote host (e.g. Neon) → @prisma/adapter-neon
- * - If DATABASE_URL is absent or localhost               → prisma-pglite (local file DB)
- *
- * Override autodetect with:
- *   DATABASE_DRIVER=neon   → always use Neon adapter
- *   DATABASE_DRIVER=pglite → always use PGlite adapter
+ * - If DATABASE_URL is present                           → @prisma/adapter-neon
+ * - If DATABASE_URL is absent                            → prisma-pglite (local file DB)
  */
 
 import { PrismaClient } from '../generated/prisma/client';
 import path from 'node:path';
 
-function isRemotePostgresUrl(url: string): boolean {
-  try {
-    const { hostname } = new URL(url);
-    return (
-      hostname !== 'localhost' &&
-      hostname !== '127.0.0.1' &&
-      hostname !== '::1'
-    );
-  } catch {
-    return false;
-  }
-}
-
 async function createAdapter() {
-  const driver = process.env.DATABASE_DRIVER;
   const url = process.env.DATABASE_URL;
 
-  const useNeon =
-    url && (driver === 'neon' || (driver !== 'pglite' && isRemotePostgresUrl(url)));
+  const useNeon = !!url;
 
   if (useNeon) {
     const { PrismaNeonHttp } = await import('@prisma/adapter-neon');
