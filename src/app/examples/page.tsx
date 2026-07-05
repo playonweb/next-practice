@@ -61,6 +61,18 @@ const examples = [
     description: 'A playground to test custom Key-Value and Blob storage wrappers.',
     color: 'from-violet-500 to-purple-500',
   },
+  {
+    title: 'Vercel Workflows',
+    href: '/examples/workflow',
+    description: 'Durable background tasks that can pause, resume, and handle errors automatically.',
+    color: 'from-pink-500 to-rose-500',
+  },
+  {
+    title: 'Vercel Cron Jobs',
+    href: '/api/cron',
+    description: 'An automated scheduled task that triggers a background workflow daily.',
+    color: 'from-amber-400 to-orange-500',
+  },
 ];
 
 export default function ExamplesPage() {
@@ -71,7 +83,7 @@ export default function ExamplesPage() {
           React <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-cyan-400">Example Apps</span>
         </h1>
         <p className="text-lg text-slate-400 max-w-2xl">
-          Explore these four premium example applications built with Next.js, Tailwind CSS, and React. 
+          Explore these premium example applications built with Next.js, Tailwind CSS, and React. 
           Each app demonstrates different core concepts and modern design aesthetics.
         </p>
       </div>

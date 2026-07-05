@@ -8,8 +8,6 @@ export default function WorkflowExamplePage() {
   const [email, setEmail] = useState("");
   const [name, setName] = useState("");
   const [status, setStatus] = useState<string>("");
-  const [loading, setLoading] = useState(false);
-
   const [isPending, startTransition] = useTransition();
 
   const triggerWorkflow = () => {
@@ -37,10 +35,9 @@ export default function WorkflowExamplePage() {
   return (
     <div className="container py-10 max-w-2xl mx-auto space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Agnostic Workflow Service</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Vercel Workflows Example</h1>
         <p className="text-muted-foreground">
-          This example demonstrates our abstracted workflow service. Currently, it wraps Vercel Workflows (Upstash QStash) 
-          but can easily be swapped to Cloudflare Workflows by changing the adapter in <code>src/services/workflow/index.ts</code>.
+          This example demonstrates the official Vercel Workflows SDK. It uses the <code>"use workflow"</code> directive to create a durable function that can survive server restarts, pause its own execution without blocking compute, and handle errors automatically.
         </p>
       </div>
 
