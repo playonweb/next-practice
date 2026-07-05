@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import Link from 'next/link';
-import type { PrismaTodo } from '@prisma/client';
+import type { PrismaTodo } from '@/generated/prisma/client';
 import { TodoService } from './todo.service';
 import { createTodo, deleteTodo, toggleTodo } from './actions';
 

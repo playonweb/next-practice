@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",
-    "@prisma/adapter-better-sqlite3": "^7.8.0",
+    "@electric-sql/pglite": "^0.5.4",
     "@prisma/client": "^7.8.0",
     "@tanstack/react-query": "^5.101.2",
     "better-sqlite3": "^12.11.1",
@@ -19,6 +19,7 @@
     "drizzle-orm": "^0.45.2",
     "lucide-react": "^1.23.0",
     "next": "16.2.10",
+    "prisma-pglite": "^3.0.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "shadcn": "^4.13.0",
