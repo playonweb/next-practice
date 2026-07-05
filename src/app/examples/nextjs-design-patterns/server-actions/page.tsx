@@ -73,12 +73,12 @@ export default function ServerActionsPage() {
           </div>
           <ul className="space-y-3">
             {optimisticItems.map((item, index) => (
-              <li key={index} className={\`p-4 rounded-xl border flex items-center justify-between \${
+              <li key={index} className={`p-4 rounded-xl border flex items-center justify-between ${
                 // If it's a new item and we're still pending, style it differently to show it's optimistic
                 isPending && index === optimisticItems.length - 1 
                   ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' 
                   : 'bg-slate-900 border-slate-800 text-slate-300'
-              }\`}>
+              }`}>
                 {item}
                 {isPending && index === optimisticItems.length - 1 && (
                   <span className="text-[10px] uppercase font-bold px-2 py-1 bg-emerald-500/20 rounded">Optimistic</span>

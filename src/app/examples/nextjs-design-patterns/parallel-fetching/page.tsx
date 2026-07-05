@@ -59,13 +59,13 @@ export default async function ParallelFetchingPage({ searchParams }: { searchPar
         <div className="flex gap-4 mb-8 p-4 bg-slate-950 rounded-2xl border border-slate-800">
           <Link 
             href="/examples/nextjs-design-patterns/parallel-fetching" 
-            className={\`px-6 py-3 rounded-xl font-medium transition-colors flex-1 text-center \${!isWaterfall ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}\`}
+            className={`px-6 py-3 rounded-xl font-medium transition-colors flex-1 text-center ${!isWaterfall ? 'bg-indigo-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
           >
             Run Parallel (Promise.all)
           </Link>
           <Link 
             href="/examples/nextjs-design-patterns/parallel-fetching?waterfall=true" 
-            className={\`px-6 py-3 rounded-xl font-medium transition-colors flex-1 text-center \${isWaterfall ? 'bg-red-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}\`}
+            className={`px-6 py-3 rounded-xl font-medium transition-colors flex-1 text-center ${isWaterfall ? 'bg-red-600 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
           >
             Run Waterfall
           </Link>
@@ -74,7 +74,7 @@ export default async function ParallelFetchingPage({ searchParams }: { searchPar
         <div className="grid md:grid-cols-2 gap-6">
           <div className="p-6 bg-slate-950 border border-slate-800 rounded-2xl">
             <div className="text-sm text-slate-500 mb-1">Time Taken</div>
-            <div className={\`text-4xl font-black \${isWaterfall ? 'text-red-400' : 'text-indigo-400'}\`}>
+            <div className={`text-4xl font-black ${isWaterfall ? 'text-red-400' : 'text-indigo-400'}`}>
               {timeTaken}s
             </div>
           </div>
