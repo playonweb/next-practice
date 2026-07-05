@@ -1,42 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus, Trash2, CheckCircle2, Circle, ListTodo } from 'lucide-react';
-
-interface Todo {
-  id: string;
-  text: string;
-  completed: boolean;
-}
+import { useTodoStore } from './store';
 
 export default function TodoApp() {
-  const [todos, setTodos] = useState<Todo[]>([
-    { id: '1', text: 'Learn Next.js App Router', completed: true },
-    { id: '2', text: 'Build beautiful React applications', completed: false },
-    { id: '3', text: 'Master Tailwind CSS animations', completed: false },
-  ]);
   const [input, setInput] = useState('');
-  const [filter, setFilter] = useState<'all' | 'active' | 'completed'>('all');
+  
+  // To avoid hydration mismatch with Zustand persist
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const todos = useTodoStore(state => state.todos);
+  const filter = useTodoStore(state => state.filter);
+  const addTodoStore = useTodoStore(state => state.addTodo);
+  const toggleTodo = useTodoStore(state => state.toggleTodo);
+  const deleteTodo = useTodoStore(state => state.deleteTodo);
+  const setFilter = useTodoStore(state => state.setFilter);
 
   const addTodo = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
     
-    setTodos([
-      ...todos,
-      { id: Date.now().toString(), text: input.trim(), completed: false }
-    ]);
+    addTodoStore(input.trim());
     setInput('');
-  };
-
-  const toggleTodo = (id: string) => {
-    setTodos(todos.map(todo => 
-      todo.id === id ? { ...todo, completed: !todo.completed } : todo
-    ));
-  };
-
-  const deleteTodo = (id: string) => {
-    setTodos(todos.filter(todo => todo.id !== id));
   };
 
   const filteredTodos = todos.filter(todo => {
@@ -46,6 +33,8 @@ export default function TodoApp() {
   });
 
   const completedCount = todos.filter(t => t.completed).length;
+
+  if (!mounted) return null; // Wait for hydration
 
   return (
     <div className="max-w-3xl mx-auto mt-8 flex flex-col items-center">

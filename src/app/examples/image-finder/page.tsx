@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { Search, Image as ImageIcon, Loader2 } from 'lucide-react';
 
 interface MockImage {
@@ -22,39 +23,34 @@ const mockImages: MockImage[] = [
   { id: '8', url: 'https://images.unsplash.com/photo-1501854140801-50d01698950b', title: 'Misty Mountains', author: 'Fiona Gray', height: 500 },
 ];
 
-export default function ImageFinderApp() {
-  const [query, setQuery] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [images, setImages] = useState<MockImage[]>([]);
-  const [searched, setSearched] = useState(false);
+const fetchImages = async (searchQuery: string): Promise<MockImage[]> => {
+  // Simulate network delay
+  await new Promise(resolve => setTimeout(resolve, 1500));
+  
+  if (!searchQuery) return mockImages;
 
-  // Initial load
-  useEffect(() => {
-    setLoading(true);
-    setTimeout(() => {
-      setImages(mockImages);
-      setLoading(false);
-    }, 1000);
-  }, []);
+  const q = searchQuery.toLowerCase();
+  const filtered = mockImages.filter(img => 
+    img.title.toLowerCase().includes(q) || img.author.toLowerCase().includes(q)
+  );
+  
+  return filtered.length > 0 ? filtered : mockImages.slice(0, 3);
+};
+
+export default function ImageFinderApp() {
+  const [searchInput, setSearchInput] = useState('');
+  const [activeQuery, setActiveQuery] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const { data: images = [], isLoading, isFetching } = useQuery({
+    queryKey: ['images', activeQuery],
+    queryFn: () => fetchImages(activeQuery),
+  });
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!query.trim()) return;
-
-    setLoading(true);
-    setSearched(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      const q = query.toLowerCase();
-      const filtered = mockImages.filter(img => 
-        img.title.toLowerCase().includes(q) || img.author.toLowerCase().includes(q)
-      );
-      
-      // If no matches, return a subset just to simulate discovering new things
-      setImages(filtered.length > 0 ? filtered : mockImages.slice(0, 3));
-      setLoading(false);
-    }, 1500);
+    setHasSearched(true);
+    setActiveQuery(searchInput);
   };
 
   return (
@@ -81,17 +77,17 @@ export default function ImageFinderApp() {
             </div>
             <input
               type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               placeholder="Search for 'mountains', 'ocean'..."
               className="flex-1 bg-transparent px-4 py-5 outline-none text-slate-200 placeholder:text-slate-600 text-lg"
             />
             <button
               type="submit"
-              disabled={loading}
+              disabled={isLoading || isFetching}
               className="mx-3 px-6 py-3 bg-purple-600 hover:bg-purple-500 disabled:bg-slate-800 disabled:text-slate-500 text-white font-medium rounded-xl transition-all disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Search'}
+              {isLoading || isFetching ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Search'}
             </button>
           </div>
         </form>
@@ -99,7 +95,7 @@ export default function ImageFinderApp() {
 
       {/* Image Grid */}
       <div className="w-full">
-        {loading && !searched ? (
+        {(isLoading || isFetching) && !hasSearched ? (
           <div className="flex justify-center items-center py-20">
             <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
           </div>
@@ -137,7 +133,7 @@ export default function ImageFinderApp() {
           </div>
         )}
 
-        {!loading && images.length === 0 && (
+        {!isLoading && !isFetching && images.length === 0 && (
           <div className="text-center py-20">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-slate-800/50 mb-4">
               <Search className="w-10 h-10 text-slate-500" />

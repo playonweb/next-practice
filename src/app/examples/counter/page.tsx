@@ -1,10 +1,19 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Minus, Plus, RotateCcw } from 'lucide-react';
+import { useCounterStore } from './store';
 
 export default function CounterApp() {
-  const [count, setCount] = useState(0);
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  const count = useCounterStore(state => state.count);
+  const increment = useCounterStore(state => state.increment);
+  const decrement = useCounterStore(state => state.decrement);
+  const reset = useCounterStore(state => state.reset);
+
+  if (!mounted) return null; // Wait for hydration
 
   return (
     <div className="max-w-2xl mx-auto mt-12 flex flex-col items-center">
@@ -38,7 +47,7 @@ export default function CounterApp() {
 
           <div className="flex items-center gap-6">
             <button
-              onClick={() => setCount(c => c - 1)}
+              onClick={decrement}
               className="group flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-800 border border-slate-700 text-slate-300 transition-all hover:bg-slate-700 hover:text-white hover:scale-105 active:scale-95 shadow-lg"
               aria-label="Decrement"
             >
@@ -46,7 +55,7 @@ export default function CounterApp() {
             </button>
 
             <button
-              onClick={() => setCount(0)}
+              onClick={reset}
               className="group flex h-12 w-12 items-center justify-center rounded-xl bg-slate-800/50 border border-slate-700 text-slate-400 transition-all hover:bg-slate-700 hover:text-white hover:rotate-180 active:scale-95"
               aria-label="Reset"
               title="Reset"
@@ -55,7 +64,7 @@ export default function CounterApp() {
             </button>
 
             <button
-              onClick={() => setCount(c => c + 1)}
+              onClick={increment}
               className="group flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 border border-blue-500 text-white transition-all hover:bg-blue-500 hover:scale-105 active:scale-95 shadow-[0_0_20px_rgba(37,99,235,0.4)] hover:shadow-[0_0_30px_rgba(59,130,246,0.6)]"
               aria-label="Increment"
             >

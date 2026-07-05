@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { Providers } from './providers';
 
 export default function ExamplesLayout({
   children,
@@ -43,7 +44,9 @@ export default function ExamplesLayout({
         </div>
       </header>
       <main className="flex-1 container mx-auto px-4 py-8">
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </main>
     </div>
   );
