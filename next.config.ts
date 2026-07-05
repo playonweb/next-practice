@@ -6,10 +6,12 @@ const nextConfig: NextConfig = {
   serverExternalPackages: [
     "@prisma/client",
     "prisma-pglite",
+    "@electric-sql/pglite",
+    "@neondatabase/serverless",
+    "@prisma/adapter-neon",
     "@augment-vir/test",
     "@augment-vir/assert",
     "@augment-vir/common",
-    "@electric-sql/pglite",
   ],
 };
 
