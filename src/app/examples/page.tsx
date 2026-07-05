@@ -49,6 +49,12 @@ const examples = [
     description: 'A classic API-driven architecture using Next.js Route Handlers and TanStack React Query.',
     color: 'from-emerald-500 to-teal-500',
   },
+  {
+    title: 'Prisma Todo App',
+    href: '/examples/todo-prisma',
+    description: 'A Server Components-based Todo app integrated with SQLite and Prisma ORM.',
+    color: 'from-fuchsia-500 to-purple-500',
+  },
 ];
 
 export default function ExamplesPage() {
