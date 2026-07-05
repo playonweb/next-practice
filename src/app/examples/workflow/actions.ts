@@ -1,5 +1,6 @@
 "use server";
 
+import { start } from "workflow/api";
 import { myWorkflow } from "./workflow";
 
 export async function triggerWorkflowAction(data: { name: string; email: string }) {
@@ -7,6 +8,6 @@ export async function triggerWorkflowAction(data: { name: string; email: string 
   // client or the workflow directly. If you don't use the client explicitly,
   // the 'use workflow' function handles its own durable execution via the Vercel platform.
   
-  await myWorkflow(data);
+  await start(myWorkflow, [data]);
   return { success: true };
 }

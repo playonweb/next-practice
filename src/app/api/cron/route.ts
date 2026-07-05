@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { start } from 'workflow/api';
 import { myWorkflow } from '../../examples/workflow/workflow';
 
 export async function GET(request: Request) {
@@ -16,7 +17,7 @@ export async function GET(request: Request) {
   console.log("Cron job running!");
   
   // Example: We can trigger our existing workflow on a schedule
-  await myWorkflow({ name: "Daily Report System", email: "admin@example.com" });
+  await start(myWorkflow, [{ name: "Daily Report System", email: "admin@example.com" }]);
 
   return NextResponse.json({ success: true, message: "Cron triggered workflow successfully" });
 }
