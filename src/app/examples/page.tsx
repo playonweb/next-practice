@@ -70,8 +70,14 @@ const examples = [
   {
     title: 'Better Auth App',
     href: '/examples/better-auth',
-    description: 'A pure Better Auth integration with Next.js Route Handlers and Prisma adapter.',
+    description: 'A pure Better Auth integration with Next.js Route Handlers and Drizzle SQLite adapter.',
     color: 'from-purple-500 to-fuchsia-500',
+  },
+  {
+    title: 'Neon Auth App',
+    href: '/examples/neon-auth',
+    description: 'A pure Neon Auth cloud integration connecting directly to Neon Auth endpoints.',
+    color: 'from-cyan-500 to-teal-500',
   },
   {
     title: 'Vercel Cron Jobs',

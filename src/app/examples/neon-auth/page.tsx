@@ -1,15 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { signIn, signUp, useSession, signOut } from '@/lib/better-auth-client';
+import { useNeonAuthSession } from '@/lib/neon-auth-client';
 import Link from 'next/link';
 
-export default function BetterAuthExamplePage() {
+export default function NeonAuthExamplePage() {
   const [mounted, setMounted] = useState(false);
-  const { data: sessionData, isPending: loading, refetch } = useSession();
-  const user = sessionData?.user;
+  const { user, loading, neonAuthUrl, signIn, signUp, signOut } = useNeonAuthSession();
 
-  // Form State
+  // Auth Form State
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
@@ -34,36 +33,14 @@ export default function BetterAuthExamplePage() {
 
     try {
       if (isSignUp) {
-        const res = await signUp.email({
-          email,
-          password,
-          name: name || email.split('@')[0],
-        });
-        if (res.error) {
-          throw new Error(res.error.message || 'Registration failed');
-        }
-        // Explicitly sign in after successful sign up
-        const loginRes = await signIn.email({
-          email,
-          password,
-        });
-        if (loginRes.error) {
-          throw new Error(loginRes.error.message || 'Sign in failed after registration');
-        }
-        setSuccessMsg('Account registered and logged in successfully!');
+        await signUp(email, name, password);
+        setSuccessMsg('Registered & logged in successfully on Neon Auth Cloud!');
       } else {
-        const res = await signIn.email({
-          email,
-          password,
-        });
-        if (res.error) {
-          throw new Error(res.error.message || 'Sign in failed');
-        }
-        setSuccessMsg('Signed in successfully!');
+        await signIn(email, password);
+        setSuccessMsg('Signed in successfully on Neon Auth Cloud!');
       }
-      await refetch();
     } catch (err: any) {
-      setErrorMsg(err.message || 'An error occurred');
+      setErrorMsg(err.message || 'Neon Auth operation failed');
     } finally {
       setSubmitting(false);
     }
@@ -74,36 +51,15 @@ export default function BetterAuthExamplePage() {
     setSuccessMsg('');
     setSubmitting(true);
     try {
-      const demoEmail = `better.user.${Date.now()}@example.com`;
-      const demoPass = 'BetterAuthPass123!';
-      const res = await signUp.email({
-        email: demoEmail,
-        password: demoPass,
-        name: 'Better Auth Demo User',
-      });
-      if (res.error) {
-        throw new Error(res.error.message || 'Demo login failed');
-      }
-      // Explicitly sign in after successful demo sign up
-      const loginRes = await signIn.email({
-        email: demoEmail,
-        password: demoPass,
-      });
-      if (loginRes.error) {
-        throw new Error(loginRes.error.message || 'Sign in failed');
-      }
-      setSuccessMsg('Created and signed in as Better Auth Demo User!');
-      await refetch();
+      const demoEmail = `neon.user.${Date.now()}@example.com`;
+      const demoPass = 'NeonAuthPass123!';
+      await signUp(demoEmail, 'Neon Cloud User', demoPass);
+      setSuccessMsg('Registered and authenticated on Neon Auth Cloud!');
     } catch (err: any) {
       setErrorMsg(err.message || 'Demo login failed');
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const handleSignOut = async () => {
-    await signOut();
-    await refetch();
   };
 
   if (!mounted) {
@@ -114,8 +70,8 @@ export default function BetterAuthExamplePage() {
           <div className="h-6 w-32 bg-slate-800 rounded-full animate-pulse" />
         </div>
         <div className="flex flex-col items-center justify-center py-20 text-slate-400">
-          <div className="w-8 h-8 rounded-full border-2 border-slate-700 border-t-purple-400 animate-spin mb-3" />
-          <p className="text-xs font-mono">Initializing Better Auth...</p>
+          <div className="w-8 h-8 rounded-full border-2 border-slate-700 border-t-cyan-400 animate-spin mb-3" />
+          <p className="text-xs font-mono">Connecting to Neon Auth...</p>
         </div>
       </div>
     );
@@ -136,13 +92,13 @@ export default function BetterAuthExamplePage() {
         </Link>
 
         {/* Engine Status Pill */}
-        <div className="flex items-center gap-3 px-4 py-2 rounded-full border border-purple-900/60 bg-purple-950/40 shadow-inner text-xs">
+        <div className="flex items-center gap-3 px-4 py-2 rounded-full border border-cyan-900/60 bg-cyan-950/40 shadow-inner text-xs">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-purple-400" />
-            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-purple-500" />
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-cyan-400" />
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500" />
           </span>
-          <span className="text-purple-200 font-medium">
-            Authentication Engine: <strong className="text-purple-300">Better Auth (TypeScript Framework)</strong>
+          <span className="text-cyan-200 font-medium">
+            Authentication Engine: <strong className="text-cyan-300">Neon Auth (Cloud API)</strong>
           </span>
         </div>
       </div>
@@ -150,41 +106,41 @@ export default function BetterAuthExamplePage() {
       {/* Main Hero Title */}
       <div className="text-center mb-10">
         <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-3">
-          Better Auth <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-500">Authentication</span>
+          Neon Auth <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-teal-300 to-indigo-400">Cloud Authentication</span>
         </h1>
         <p className="text-slate-400 max-w-2xl mx-auto text-sm leading-relaxed">
-          Comprehensive authentication management using <strong>Better Auth</strong> with Next.js Route Handlers and Prisma database adapter.
+          Standalone integration connecting directly to <strong>Neon Auth Cloud Service</strong> at <code className="text-cyan-300 bg-slate-900 px-1.5 py-0.5 rounded text-xs">{neonAuthUrl}</code>.
         </p>
       </div>
 
       {/* Main Grid Section */}
       {loading ? (
         <div className="flex flex-col items-center justify-center py-20 bg-slate-900/40 border border-slate-800 rounded-3xl text-slate-400">
-          <svg className="w-10 h-10 animate-spin text-purple-400 mb-4" fill="none" viewBox="0 0 24 24">
+          <svg className="w-10 h-10 animate-spin text-cyan-400 mb-4" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
           </svg>
-          <p className="text-sm font-medium font-mono">Verifying Better Auth Session...</p>
+          <p className="text-sm font-medium font-mono">Verifying Neon Auth Cloud Session...</p>
         </div>
       ) : user ? (
         /* ================= AUTHENTICATED DASHBOARD ================= */
         <div className="space-y-8">
           {/* Top User Card */}
           <div className="bg-slate-900/70 border border-slate-800 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-purple-500/10 to-fuchsia-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-cyan-500/10 to-teal-500/10 rounded-full blur-3xl -mr-16 -mt-16 pointer-events-none" />
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 relative z-10">
               <div className="flex items-center gap-5">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-purple-500 via-fuchsia-500 to-pink-500 p-0.5 shadow-xl">
-                  <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-fuchsia-300">
+                <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-cyan-500 via-teal-400 to-indigo-500 p-0.5 shadow-xl">
+                  <div className="w-full h-full bg-slate-950 rounded-[14px] flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-300">
                     {user.name?.[0]?.toUpperCase() || user.email[0].toUpperCase()}
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center gap-3">
-                    <h2 className="text-2xl font-bold text-white">{user.name || 'Better Auth User'}</h2>
-                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-purple-950 text-purple-300 border border-purple-800/60 flex items-center gap-1">
-                      <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-pulse" /> Active Session
+                    <h2 className="text-2xl font-bold text-white">{user.name || 'Neon Auth User'}</h2>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-950 text-cyan-300 border border-cyan-800/60 flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" /> Neon Cloud Verified
                     </span>
                   </div>
                   <p className="text-sm text-slate-400 mt-1">{user.email}</p>
@@ -194,7 +150,7 @@ export default function BetterAuthExamplePage() {
 
               {/* Logout Button */}
               <button
-                onClick={handleSignOut}
+                onClick={signOut}
                 className="w-full sm:w-auto px-6 py-3 rounded-2xl font-semibold text-sm bg-rose-600/15 text-rose-300 border border-rose-800/40 hover:bg-rose-600/30 hover:border-rose-700/60 transition-all flex items-center justify-center gap-2 shadow-lg group"
               >
                 <svg className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +166,7 @@ export default function BetterAuthExamplePage() {
                 onClick={() => setActiveAccountTab('profile')}
                 className={`pb-3 font-semibold transition-all border-b-2 ${
                   activeAccountTab === 'profile'
-                    ? 'border-purple-400 text-purple-400'
+                    ? 'border-cyan-400 text-cyan-400'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -220,7 +176,7 @@ export default function BetterAuthExamplePage() {
                 onClick={() => setActiveAccountTab('session')}
                 className={`pb-3 font-semibold transition-all border-b-2 ${
                   activeAccountTab === 'session'
-                    ? 'border-purple-400 text-purple-400'
+                    ? 'border-cyan-400 text-cyan-400'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -230,7 +186,7 @@ export default function BetterAuthExamplePage() {
                 onClick={() => setActiveAccountTab('protected')}
                 className={`pb-3 font-semibold transition-all border-b-2 ${
                   activeAccountTab === 'protected'
-                    ? 'border-purple-400 text-purple-400'
+                    ? 'border-cyan-400 text-cyan-400'
                     : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -250,7 +206,7 @@ export default function BetterAuthExamplePage() {
                       <span className="text-xs text-slate-500 block">Full Name</span>
                       <span className="font-semibold text-white">{user.name || 'Not specified'}</span>
                     </div>
-                    <span className="text-xs text-slate-500 font-mono">Better Auth User</span>
+                    <span className="text-xs text-slate-500 font-mono">Neon Account</span>
                   </div>
 
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
@@ -259,16 +215,16 @@ export default function BetterAuthExamplePage() {
                       <span className="font-semibold text-white">{user.email}</span>
                     </div>
                     <span className="text-xs text-emerald-400 font-semibold px-2 py-0.5 rounded bg-emerald-950 border border-emerald-800">
-                      Active
+                      Verified
                     </span>
                   </div>
 
                   <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 flex justify-between items-center">
                     <div>
-                      <span className="text-xs text-slate-500 block">Auth Engine</span>
-                      <span className="font-semibold text-purple-400">Better Auth (TypeScript Framework)</span>
+                      <span className="text-xs text-slate-500 block">Auth Service</span>
+                      <span className="font-semibold text-cyan-400">Neon Auth (Cloud Engine)</span>
                     </div>
-                    <span className="text-xs text-slate-400 font-mono">/api/auth/*</span>
+                    <span className="text-xs text-slate-400 font-mono">Cloud API</span>
                   </div>
                 </div>
               </div>
@@ -277,12 +233,12 @@ export default function BetterAuthExamplePage() {
                 <div>
                   <h4 className="font-bold text-white mb-2">Quick Security Action</h4>
                   <p className="text-xs text-slate-400 leading-relaxed mb-4">
-                    Click below to terminate your session via Better Auth client.
+                    Click below to terminate your session via Neon Auth API.
                   </p>
                 </div>
 
                 <button
-                  onClick={handleSignOut}
+                  onClick={signOut}
                   className="w-full py-3 rounded-xl font-bold text-sm bg-rose-600 hover:bg-rose-500 text-white shadow-lg shadow-rose-600/20 transition-all"
                 >
                   Logout Account
@@ -295,28 +251,28 @@ export default function BetterAuthExamplePage() {
             <div className="bg-slate-900/60 border border-slate-800 rounded-3xl p-6 space-y-4">
               <h3 className="text-lg font-bold text-white mb-2">Session Payload Inspector</h3>
               <p className="text-xs text-slate-400 mb-4">
-                Raw session object returned from <code className="text-purple-400">useSession()</code> hook:
+                Raw user record returned from <code className="text-cyan-400">{neonAuthUrl}/get-session</code>:
               </p>
 
-              <pre className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs font-mono text-purple-300 overflow-x-auto leading-relaxed">
-{JSON.stringify(sessionData, null, 2)}
+              <pre className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs font-mono text-cyan-300 overflow-x-auto leading-relaxed">
+{JSON.stringify(user, null, 2)}
               </pre>
             </div>
           )}
 
           {activeAccountTab === 'protected' && (
-            <div className="p-6 rounded-3xl bg-gradient-to-br from-purple-950/40 to-slate-900 border border-purple-800/40">
-              <div className="flex items-center gap-3 mb-3 text-purple-400">
+            <div className="p-6 rounded-3xl bg-gradient-to-br from-cyan-950/40 to-slate-900 border border-cyan-800/40">
+              <div className="flex items-center gap-3 mb-3 text-cyan-400">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
                 <h3 className="text-lg font-bold text-white">Protected Secret Member Content</h3>
               </div>
               <p className="text-xs text-slate-300 leading-relaxed mb-4">
-                Access granted! Better Auth session validated for <strong>{user.email}</strong>.
+                Access granted! Neon Auth session validated for <strong>{user.email}</strong>.
               </p>
-              <div className="p-4 rounded-xl bg-slate-950 border border-purple-900/60 text-xs text-purple-300 font-mono">
-                <code>MEMBER_SECRET = "Better Auth Session Authenticated Successfully!"</code>
+              <div className="p-4 rounded-xl bg-slate-950 border border-cyan-900/60 text-xs text-cyan-300 font-mono">
+                <code>NEON_CLOUD_SECRET = "Neon Auth Cloud Session Authenticated Successfully!"</code>
               </div>
             </div>
           )}
@@ -332,7 +288,7 @@ export default function BetterAuthExamplePage() {
                 type="button"
                 onClick={() => { setIsSignUp(false); setErrorMsg(''); setSuccessMsg(''); }}
                 className={`flex-1 pb-3 text-sm font-bold text-center border-b-2 transition-all ${
-                  !isSignUp ? 'border-purple-400 text-purple-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+                  !isSignUp ? 'border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >
                 Sign In
@@ -341,7 +297,7 @@ export default function BetterAuthExamplePage() {
                 type="button"
                 onClick={() => { setIsSignUp(true); setErrorMsg(''); setSuccessMsg(''); }}
                 className={`flex-1 pb-3 text-sm font-bold text-center border-b-2 transition-all ${
-                  isSignUp ? 'border-purple-400 text-purple-400' : 'border-transparent text-slate-400 hover:text-slate-200'
+                  isSignUp ? 'border-cyan-400 text-cyan-400' : 'border-transparent text-slate-400 hover:text-slate-200'
                 }`}
               >
                 Sign Up / Register
@@ -354,12 +310,12 @@ export default function BetterAuthExamplePage() {
                 type="button"
                 onClick={handleDemoLogin}
                 disabled={submitting}
-                className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-purple-600/20 text-purple-300 border border-purple-800/50 hover:bg-purple-600/30 transition-all flex items-center justify-center gap-2"
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold bg-cyan-600/20 text-cyan-300 border border-cyan-800/50 hover:bg-cyan-600/30 transition-all flex items-center justify-center gap-2"
               >
-                <svg className="w-4 h-4 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
-                One-Click Register & Login as Demo User
+                One-Click Register & Login on Neon Auth Cloud
               </button>
             </div>
 
@@ -385,7 +341,7 @@ export default function BetterAuthExamplePage() {
                     placeholder="Jane Doe"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"
                   />
                 </div>
               )}
@@ -398,7 +354,7 @@ export default function BetterAuthExamplePage() {
                   placeholder="user@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors"
+                  className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors"
                 />
               </div>
 
@@ -411,7 +367,7 @@ export default function BetterAuthExamplePage() {
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-purple-500 transition-colors pr-10"
+                    className="w-full px-4 py-2.5 rounded-xl bg-slate-950 border border-slate-800 text-sm text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 transition-colors pr-10"
                   />
                   <button
                     type="button"
@@ -426,9 +382,9 @@ export default function BetterAuthExamplePage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-purple-600 to-fuchsia-600 hover:from-purple-500 hover:to-fuchsia-500 text-white shadow-lg shadow-purple-600/25 transition-all disabled:opacity-50 mt-2"
+                className="w-full py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white shadow-lg shadow-indigo-500/25 transition-all disabled:opacity-50 mt-2"
               >
-                {submitting ? 'Authenticating...' : isSignUp ? 'Create Better Auth Account' : 'Sign In with Better Auth'}
+                {submitting ? 'Authenticating on Neon Auth...' : isSignUp ? 'Create Neon Auth Account' : 'Sign In with Neon Auth'}
               </button>
             </form>
           </div>
@@ -436,14 +392,14 @@ export default function BetterAuthExamplePage() {
           {/* Right Column: Protected Gate Preview */}
           <div className="bg-slate-900/40 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between">
             <div>
-              <div className="flex items-center gap-2 text-purple-400 mb-3">
+              <div className="flex items-center gap-2 text-cyan-400 mb-3">
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
-                <h3 className="font-bold text-white">Better Auth Protected Gate</h3>
+                <h3 className="font-bold text-white">Neon Auth Protected Gate</h3>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed mb-6">
-                Sign in or register a new user to test Better Auth's session engine and route handlers (`/api/auth/*`).
+                Sign in or register a new user to make live API calls to Neon Auth Cloud service.
               </p>
 
               <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs space-y-3">
@@ -453,17 +409,17 @@ export default function BetterAuthExamplePage() {
                 </div>
                 <div className="flex items-center justify-between text-slate-400">
                   <span>Auth Engine:</span>
-                  <span className="text-purple-400 font-mono">Better Auth</span>
+                  <span className="text-cyan-400 font-mono">Neon Auth Cloud</span>
                 </div>
                 <div className="flex items-center justify-between text-slate-400">
                   <span>Endpoint:</span>
-                  <span className="text-slate-300 font-mono text-[11px]">/api/auth/[...all]</span>
+                  <span className="text-slate-300 font-mono text-[11px]">{neonAuthUrl}</span>
                 </div>
               </div>
             </div>
 
             <div className="pt-4 border-t border-slate-800 mt-6 text-[11px] text-slate-500 flex justify-between">
-              <span>Step 1: Pure Better Auth</span>
+              <span>Step 2: Pure Neon Auth</span>
               <span>Practice Next.js</span>
             </div>
           </div>
